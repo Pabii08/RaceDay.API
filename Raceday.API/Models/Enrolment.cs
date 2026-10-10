@@ -1,20 +1,23 @@
-﻿using Raceday.API.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace RaceDay.API.Models
 {
     public class Enrolment
     {
         public int EnrolmentId { get; set; }
-        public int UserId { get; set; } // Participant
-        public int EventId { get; set; }
-        public int CategoryId { get; set; }
-        public DateTime EntryDate { get; set; } = DateTime.Now;
-        public string Status { get; set; } = "Confirmed";
 
-        // Navigation properties
-        public User? Participant { get; set; }
+        public int UserId { get; set; }
+        public User? User { get; set; }
+
+        public int EventId { get; set; }
         public Event? Event { get; set; }
+
+        public int CategoryId { get; set; }
         public Category? Category { get; set; }
+
+        public DateTime EnrolmentDate { get; set; } = DateTime.Now;
+
+        // Navigation property for Result
         public Result? Result { get; set; }
     }
 }

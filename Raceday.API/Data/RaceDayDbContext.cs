@@ -30,6 +30,25 @@ namespace RaceDay.API.Data
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Email)
                 .IsUnique();
-        }
+
+            modelBuilder.Entity<Enrolment>()
+        .HasOne(e => e.User)
+        .WithMany(u => u.Enrolments)
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.NoAction); // Tells SQL not to auto-delete
+
+            modelBuilder.Entity<Enrolment>()
+                .HasOne(e => e.Event)
+                .WithMany(ev => ev.Enrolments)
+                .HasForeignKey(e => e.EventId)
+                .OnDelete(DeleteBehavior.NoAction); // Tells SQL not to auto-delete
+
+            modelBuilder.Entity<Enrolment>()
+                .HasOne(e => e.Category)
+                .WithMany(c => c.Enrolments)
+                .HasForeignKey(e => e.CategoryId)
+                .OnDelete(DeleteBehavior.NoAction); // Tells SQL not to auto-delete
+        
+    }
     }
 }

@@ -8,11 +8,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 1. Register the DbContext
+// Register the DbContext
 builder.Services.AddDbContext<RaceDayDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. Add Session Management
+// Add Session Management
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -32,9 +32,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// 3. Use Session (Must be before Authorization and MapControllers)
 app.UseSession();
 
 app.UseAuthorization();
+
 app.MapControllers();
+
 app.Run();
