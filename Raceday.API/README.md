@@ -74,3 +74,4 @@ Role-based access is enforced using a custom `SessionAuthorize` filter.
    ```bash
    git clone https://github.com/YourUsername/RaceDay.API.git
    cd RaceDay.API
+1. ![CI/CD Success](./ci-cd-success.png)
