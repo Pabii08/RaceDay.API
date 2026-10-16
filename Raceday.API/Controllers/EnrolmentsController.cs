@@ -17,12 +17,15 @@ namespace RaceDay.API.Controllers
             _context = context;
         }
 
-        // POST: api/enrolments - Participant only
+        /// <summary>
+        /// Enrols the currently logged-in Participant in an event under a specific category.
+        /// </summary>
+        /// <param name="enrolment">The enrolment details including the event ID and category ID.</param>
+        /// <returns>A confirmation message with the enrolment record. Returns 403 for Organisers.</returns>
         [HttpPost]
         [SessionAuthorize("Participant")]
         public async Task<IActionResult> EnrolInEvent([FromBody] Enrolment enrolment)
         {
-            // Get logged-in user's ID from session
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null) return Unauthorized();
 
@@ -34,7 +37,10 @@ namespace RaceDay.API.Controllers
             return Ok(new { message = "Enrolled successfully.", enrolment });
         }
 
-        // GET: api/enrolments/my-enrolments - Participant only
+        /// <summary>
+        /// Retrieves all enrolments for the currently logged-in Participant.
+        /// </summary>
+        /// <returns>A list of the participant's enrolments, including event and category details.</returns>
         [HttpGet("my-enrolments")]
         [SessionAuthorize("Participant")]
         public async Task<IActionResult> GetMyEnrolments()
@@ -48,7 +54,11 @@ namespace RaceDay.API.Controllers
             return Ok(enrolments);
         }
 
-        // GET: api/enrolments/event/5 - Organiser only
+        /// <summary>
+        /// Retrieves all enrolments for a specific event. Only accessible to Organisers.
+        /// </summary>
+        /// <param name="eventId">The ID of the event.</param>
+        /// <returns>A list of all enrolments for that event, including participant details.</returns>
         [HttpGet("event/{eventId}")]
         [SessionAuthorize("Organiser")]
         public async Task<IActionResult> GetEnrolmentsForEvent(int eventId)

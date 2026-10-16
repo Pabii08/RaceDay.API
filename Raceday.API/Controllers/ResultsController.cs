@@ -17,7 +17,11 @@ namespace RaceDay.API.Controllers
             _context = context;
         }
 
-        // POST: api/results - Organiser only
+        /// <summary>
+        /// Captures a result for a participant after an event. Only accessible to Organisers.
+        /// </summary>
+        /// <param name="result">The result details including enrolment ID, time, position, and status.</param>
+        /// <returns>A confirmation message with the captured result.</returns>
         [HttpPost]
         [SessionAuthorize("Organiser")]
         public async Task<IActionResult> CaptureResult([FromBody] Result result)
@@ -27,7 +31,10 @@ namespace RaceDay.API.Controllers
             return Ok(new { message = "Result captured successfully.", result });
         }
 
-        // GET: api/results/my-results - Participant only
+        /// <summary>
+        /// Retrieves all results for the currently logged-in Participant.
+        /// </summary>
+        /// <returns>A list of the participant's results. Returns 403 for Organisers.</returns>
         [HttpGet("my-results")]
         [SessionAuthorize("Participant")]
         public async Task<IActionResult> GetMyResults()
@@ -40,7 +47,11 @@ namespace RaceDay.API.Controllers
             return Ok(results);
         }
 
-        // GET: api/results/event/5 - Both roles can view
+        /// <summary>
+        /// Retrieves all results for a specific event, ordered by finishing position.
+        /// </summary>
+        /// <param name="eventId">The ID of the event.</param>
+        /// <returns>A list of all results for that event. Requires any authenticated user.</returns>
         [HttpGet("event/{eventId}")]
         [SessionAuthorize]
         public async Task<IActionResult> GetResultsForEvent(int eventId)

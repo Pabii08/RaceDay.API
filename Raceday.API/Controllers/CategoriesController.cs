@@ -17,7 +17,11 @@ namespace RaceDay.API.Controllers
             _context = context;
         }
 
-        // GET: api/categories/event/5 - Both roles can view
+        /// <summary>
+        /// Retrieves all categories for a specific event.
+        /// </summary>
+        /// <param name="eventId">The ID of the event.</param>
+        /// <returns>A list of categories for that event. Requires any authenticated user.</returns>
         [HttpGet("event/{eventId}")]
         [SessionAuthorize]
         public async Task<IActionResult> GetCategoriesForEvent(int eventId)
@@ -28,7 +32,11 @@ namespace RaceDay.API.Controllers
             return Ok(categories);
         }
 
-        // POST: api/categories - Organiser only
+        /// <summary>
+        /// Creates a new category for an event. Only accessible to Organisers.
+        /// </summary>
+        /// <param name="category">The category details including name and event ID.</param>
+        /// <returns>A confirmation message with the created category. Returns 403 for Participants.</returns>
         [HttpPost]
         [SessionAuthorize("Organiser")]
         public async Task<IActionResult> CreateCategory([FromBody] Category category)
@@ -38,7 +46,11 @@ namespace RaceDay.API.Controllers
             return Ok(new { message = "Category created successfully.", category });
         }
 
-        // DELETE: api/categories/5 - Organiser only
+        /// <summary>
+        /// Deletes a category. Only accessible to Organisers.
+        /// </summary>
+        /// <param name="id">The ID of the category to delete.</param>
+        /// <returns>A confirmation message. Returns 404 if not found.</returns>
         [HttpDelete("{id}")]
         [SessionAuthorize("Organiser")]
         public async Task<IActionResult> DeleteCategory(int id)

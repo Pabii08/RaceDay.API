@@ -17,26 +17,29 @@ namespace RaceDay.API.Controllers
             _context = context;
         }
 
-        // POST: api/auth/register
+        /// <summary>
+        /// Registers a new user account with the specified role.
+        /// </summary>
+        /// <param name="request">The registration details including name, email, password, and role (Organiser or Participant).</param>
+        /// <returns>A confirmation message and the newly created user's details. Returns 400 if the email is already in use or the role is invalid.</returns>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto request)
         {
-            // 1. Check if email already exists
+            // Check if email already exists
             if (await _context.Users.AnyAsync(u => u.Email == request.Email))
             {
                 return BadRequest(new { message = "Email already in use." });
             }
 
-            // 2. Validate the role
+            // Validate the role
             if (request.Role != "Organiser" && request.Role != "Participant")
             {
                 return BadRequest(new { message = "Role must be 'Organiser' or 'Participant'." });
             }
 
-            // 3. Hash the password using BCrypt
+            // Hash the password using BCrypt
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
-            // 4. Create the user object
             var user = new User
             {
                 Name = request.Name,
@@ -45,11 +48,9 @@ namespace RaceDay.API.Controllers
                 Role = request.Role
             };
 
-            // 5. Save to database
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            // 6. Return the user info (without the password hash!)
             var response = new UserResponseDto
             {
                 UserId = user.UserId,
@@ -61,11 +62,14 @@ namespace RaceDay.API.Controllers
             return Ok(new { message = "Registration successful", user = response });
         }
 
-        // POST: api/auth/login
+        /// <summary>
+        /// Logs in a user and creates a server-side session.
+        /// </summary>
+        /// <param name="request">The user's email and password.</param>
+        /// <returns>A confirmation message with the user's details. Stores session state for subsequent requests. Returns 401 if credentials are invalid.</returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto request)
         {
-            // 1. Find the user by email
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null)
@@ -73,7 +77,6 @@ namespace RaceDay.API.Controllers
                 return Unauthorized(new { message = "Invalid email or password." });
             }
 
-            // 2. Verify the password against the hash
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
 
             if (!isPasswordValid)
@@ -81,7 +84,7 @@ namespace RaceDay.API.Controllers
                 return Unauthorized(new { message = "Invalid email or password." });
             }
 
-            // 3. Store user info in the session
+            // Store user info in the session
             HttpContext.Session.SetInt32("UserId", user.UserId);
             HttpContext.Session.SetString("UserRole", user.Role);
             HttpContext.Session.SetString("UserName", user.Name);
@@ -97,7 +100,10 @@ namespace RaceDay.API.Controllers
             return Ok(new { message = "Login successful", user = response });
         }
 
-        // POST: api/auth/logout
+        /// <summary>
+        /// Logs out the current user and destroys their session.
+        /// </summary>
+        /// <returns>A confirmation message.</returns>
         [HttpPost("logout")]
         public IActionResult Logout()
         {
@@ -105,7 +111,10 @@ namespace RaceDay.API.Controllers
             return Ok(new { message = "Logged out successfully." });
         }
 
-        // GET: api/auth/me (Check who is currently logged in)
+        /// <summary>
+        /// Returns the details of the currently logged-in user.
+        /// </summary>
+        /// <returns>The user's ID, name, and role. Returns 401 if not logged in.</returns>
         [HttpGet("me")]
         public IActionResult GetCurrentUser()
         {
