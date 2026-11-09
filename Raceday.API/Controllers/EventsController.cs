@@ -23,14 +23,31 @@ namespace RaceDay.API.Controllers
         /// <returns>A list of all events. Requires any authenticated user.</returns>
         [HttpGet]
         [SessionAuthorize]
+        [HttpGet]
         public async Task<IActionResult> GetAllEvents()
         {
             var events = await _context.Events
                 .Include(e => e.Categories)
+                .Select(e => new
+                {
+                    e.EventId,
+                    e.Name,
+                    e.Description,
+                    e.Date,
+                    e.Location,
+                    e.Distance,
+                    e.EventType,
+                    Categories = e.Categories.Select(c => new
+                    {
+                        c.CategoryId,
+                        c.Name
+                    })
+                })
                 .ToListAsync();
 
             return Ok(events);
         }
+        
 
         /// <summary>
         /// Retrieves a single event by its ID, including its categories.
